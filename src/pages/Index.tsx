@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import Sidebar from '@/components/Sidebar';
@@ -10,6 +11,8 @@ type Message = {
   role: 'user' | 'assistant';
   content: string;
 };
+
+const BACKEND_URL = 'http://localhost:8000';
 
 const Index = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -37,14 +40,19 @@ const Index = () => {
       
       setMessages(newMessages);
 
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await fetch(`${BACKEND_URL}/api/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: content }),
+      });
 
-      const assistantMessage: Message = {
-        role: 'assistant',
-        content: "I am a hardcoded response. The database connection has been removed for testing purposes. You can modify this response in the Index.tsx file."
-      };
+      if (!response.ok) {
+        throw new Error('Failed to get response from server');
+      }
 
+      const assistantMessage: Message = await response.json();
       setMessages([...newMessages, assistantMessage]);
     } catch (error: any) {
       toast({

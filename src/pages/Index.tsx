@@ -1,6 +1,9 @@
 
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { LogIn, UserPlus } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import ChatHeader from '@/components/ChatHeader';
 import ChatInput from '@/components/ChatInput';
@@ -19,6 +22,7 @@ const Index = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSendMessage = async (content: string) => {
     if (!content.trim()) {
@@ -70,10 +74,26 @@ const Index = () => {
       <Sidebar 
         isOpen={isSidebarOpen} 
         onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
-        onApiKeyChange={() => {}} // Empty function since we don't need API key anymore
+        onApiKeyChange={() => {}}
       />
       
       <main className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-0'}`}>
+        <div className="fixed top-0 right-4 flex gap-2 p-4 z-50">
+          <Button 
+            variant="outline"
+            onClick={() => navigate('/signin')}
+          >
+            <LogIn className="mr-2 h-4 w-4" />
+            Sign In
+          </Button>
+          <Button 
+            onClick={() => navigate('/signup')}
+          >
+            <UserPlus className="mr-2 h-4 w-4" />
+            Sign Up
+          </Button>
+        </div>
+
         <ChatHeader isSidebarOpen={isSidebarOpen} />
         
         <div className={`flex h-full flex-col ${messages.length === 0 ? 'items-center justify-center' : 'justify-between'} pt-[60px] pb-4`}>
